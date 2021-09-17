@@ -1,27 +1,33 @@
-const { DataTypes } = require("sequelize");
 const db = require("../db");
 
-const Quote = db.define("quote", {
-    quote: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-    },
-    attribution: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    share: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-    },
-    owner: {
-        type: DataTypes.NUMBER,
-        allowNull: false,
-    },
-    approvedForAll: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-    },
-});
+const DefineQuote = (sequelize, DataTypes) => {
+    const Quote = sequelize.define("quote", {
+        quoteBody: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+        },
+        attribution: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        // tags: {
+            //     type: DataTypes.ARRAY,
+            // },
+        share: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
+        createdBy: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        approvedForAll: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+        },
+    })
+    return Quote
+};
 
-module.exports = Quote;
+module.exports = DefineQuote;

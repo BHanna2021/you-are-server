@@ -1,3 +1,4 @@
+require("dotenv").config();
 const Sequelize = require('sequelize');
 const sequelize = new Sequelize(
     process.env.DB_DBNAME,
@@ -9,4 +10,4 @@ const sequelize = new Sequelize(
     }
 )
 
-module.exports = sequelize;
+module.exports = { sequelize };

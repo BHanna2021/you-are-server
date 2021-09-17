@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { MemberModel } = require("../models");
+const { Member } = require("../models");
 
 const validateJWT = async(req, res, next) => {
     if (req.method == "OPTIONS") {
@@ -19,7 +19,7 @@ const validateJWT = async(req, res, next) => {
         undefined;
 
         if (payload) {
-            let foundMember = await MemberModel.findOne({ where: { id: payload.id } });
+            let foundMember = await Member.findOne({ where: { id: payload.id } });
             if (foundMember) {
                 req.member = foundMember;
                 next();

@@ -1,20 +1,25 @@
 const router = require("express").Router();
-const { MemberModel } = require("../models");
+const { Member } = require("../models");
 const { UniqueConstraintError } = require("sequelize/lib/errors");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const validateIsAdmin = require("../middleware/validate-is-admin");
+const validateJWT = require("../middleware/validate-member")
 
 router.post("/register", async(req, res) => {
     let { email, password, firstName, phoneNumber } = req.body.Member;
     try {
-        const newMember = await MemberModel.create({
+        let isAdmin = req.body.Member.isAdmin ? req.body.Member.isAdmin : false
+        const newMember = await Member.create({
             email,
             password: bcrypt.hashSync(password, 13),
             firstName,
-            phoneNumber
+            phoneNumber,
+            isAdmin
         });
-
-        let token = jwt.sign({ id: newMember.id }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 });
+        let token = jwt.sign({
+            id: newMember.id,
+        }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 });
 
         res.status(201).json({
             message: `${email} has been successfully registered.`,
@@ -37,7 +42,7 @@ router.post("/register", async(req, res) => {
 router.post("/login", async(req, res) => {
     let { email, password } = req.body.Member;
     try {
-        const loggedInMember = await MemberModel.findOne({
+        const loggedInMember = await Member.findOne({
             where: {
                 email: email,
             },
@@ -45,8 +50,9 @@ router.post("/login", async(req, res) => {
         if (loggedInMember) {
             let passwordCompare = await bcrypt.compare(password, loggedInMember.password);
             if (passwordCompare) {
-                let token = jwt.sign({ id: loggedInMember.id }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 });
-
+                let token = jwt.sign({
+                    id: loggedInMember.id,
+                }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 });
                 res.status(200).json({
                     member: loggedInMember,
                     message: `${email} successfully logged in.`,
@@ -66,6 +72,31 @@ router.post("/login", async(req, res) => {
         res.status(500).json({
             message: "Failed to log user in"
         });
+    }
+});
+
+//get all users, admin only
+router.get("/all", [validateJWT, validateIsAdmin], async(req, res) => {
+    try {
+        const results = await Member.findAll();
+        res.status(200).json(results);
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
+});
+
+router.get("/:id", [validateJWT, validateIsAdmin], async(req, res) => {
+    // const { id } = req.member;
+    const { id } = req.params;
+    try {
+        const foundMember = await Member.findOne({
+            where: {
+                id: id
+            }
+        });
+        res.status(200).json(foundMember)
+    } catch (err) {
+        res.status(500).json({ error: err });
     }
 });
 
