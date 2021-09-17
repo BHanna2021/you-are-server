@@ -6,13 +6,6 @@ const DefineQuote = (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
             allowNull: false,
         },
-        attribution: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        // tags: {
-            //     type: DataTypes.ARRAY,
-            // },
         share: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
@@ -25,6 +18,7 @@ const DefineQuote = (sequelize, DataTypes) => {
         approvedForAll: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
+            defaultValue: false
         },
     })
     return Quote
