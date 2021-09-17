@@ -10,7 +10,9 @@ const Journal = DefineJournal(sequelize, DataTypes)
 const Quote = DefineQuote(sequelize, DataTypes)
 
 Member.hasMany(Journal, {
-    foreignKey: 'memberId'
+    foreignKey: 'memberId',
+    allowNull: false,
+    onDelete: "CASCADE"
 })
 Journal.belongsTo(Member)
 

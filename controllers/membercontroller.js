@@ -86,7 +86,6 @@ router.get("/all", [validateJWT, validateIsAdmin], async(req, res) => {
 });
 
 router.get("/:id", [validateJWT, validateIsAdmin], async(req, res) => {
-    // const { id } = req.member;
     const { id } = req.params;
     try {
         const foundMember = await Member.findOne({
@@ -95,6 +94,23 @@ router.get("/:id", [validateJWT, validateIsAdmin], async(req, res) => {
             }
         });
         res.status(200).json(foundMember)
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
+});
+
+router.delete("/:id", [validateJWT, validateIsAdmin], async(req, res) => {
+    const { id } = req.params;
+    try {
+        const query = {
+            where: {
+                id: id
+            }
+        };
+        await Member.destroy(query);
+        res.status(200).json({
+            message: `Member ${id} has been removed.`
+        })
     } catch (err) {
         res.status(500).json({ error: err });
     }
