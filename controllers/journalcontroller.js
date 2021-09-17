@@ -14,7 +14,7 @@ router.post("/", validateJWT, async(req, res) => {
     }
     try {
         const newJournal = await Journal.create(journalEntry);
-        res.status(200).json(newJournal);
+        res.status(201).json(newJournal);
     } catch (err) {
         res.status(500).json({ error: err })
     }
@@ -28,12 +28,14 @@ router.get("/", validateJWT, async(req, res) => {
                 memberId: id
             }
         });
-        res.status(200).json(journals);
+        res.status(200).json(journals)
     } catch (err) {
         res.status(500).json({ error: err });
     }
 });
 
+//when attempting a user that is not associated to the journal, it hits 500
+//tried commenting the try/catch block, tried a few things but no go with try in place
 router.get("/:id", validateJWT, async(req, res) => {
     const { id } = req.member;
     const journalId = req.params.id;
@@ -44,7 +46,7 @@ router.get("/:id", validateJWT, async(req, res) => {
                 id: journalId
             }
         });
-        res.status(200).json(journal);
+        res.status(200).json(journal)
     } catch (err) {
         res.status(500).json({ error: err });
     }

@@ -14,29 +14,29 @@ router.post("/", validateJWT, async(req, res) => {
         }
         try {
             const newQuote = await Quote.create(quoteEntry);
-            res.status(200).json(newQuote);
+            res.status(201).json(newQuote);
         } catch (err) {
             res.status(500).json({ error: err })
         }
 });
 
 //admin only create
-// router.post("/add", [validateJWT, validateIsAdmin], async(req, res) => {
-//     const { quoteBody, share, approvedForAll } = req.body.Quote;
-//     const { id } = req.member;
-//     const quoteEntry = {
-//         quoteBody,
-//         share,
-//         approvedForAll,
-//         owner: id
-//     }
-//     try {
-//         const newQuote = await Quote.create(quoteEntry);
-//         res.status(200).json(newQuote);
-//     } catch (err) {
-//         res.status(500).json({ error: err })
-//     }
-// })
+router.post("/add", [validateJWT, validateIsAdmin], async(req, res) => {
+    const { quoteBody, share, approvedForAll } = req.body.Quote;
+    const { id } = req.member;
+    const quoteEntry = {
+        quoteBody,
+        share,
+        approvedForAll,
+        createdBy: id
+    }
+    try {
+        const newQuote = await Quote.create(quoteEntry);
+        res.status(200).json(newQuote);
+    } catch (err) {
+        res.status(500).json({ error: err })
+    }
+})
 
 // router.get("/favorites", validateJWT, async(req, res) => {
 //     const { id } = req.member.id;
@@ -54,25 +54,23 @@ router.post("/", validateJWT, async(req, res) => {
 // });
 
 //search all quotes shareable
-// router.get("/", validateJWT, async(req, res) => {
-//     const userId = req.member.id;
-//     const journalId = req.params.id;
-//     try {
-//         const journal = await Quote.findOne({
-//             where: {
-//                 owner: userId,
-//                 id: journalId,
-//                 share: true
-//             }
-//         });
-//         res.status(200).json(journal);
-//     } catch (err) {
-//         res.status(500).json({ error: err });
-//     }
-// });
+router.get("/", validateJWT, async(req, res) => {
+    const query = {
+        where: {
+            share: true,
+            approvedForAll: true,
+        }
+    }
+    try {
+        const quotes = await Quote.findAll(query);
+        res.status(200).json(quotes);
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
+});
 
 //search my quotes
-router.get("/:id", validateJWT, async(req, res) => {
+router.get("/mine", validateJWT, async(req, res) => {
     const { id } = req.member;
     try {
         const quotes = await Quote.findAll({
@@ -109,23 +107,23 @@ router.put("/:id", validateJWT, async(req, res) => {
     }
 });
 
-// router.delete("/:id", validateJWT, async(req, res) => {
-//     const ownerId = req.member.id;
-//     const quoteId = req.params.id;
-//     try {
-//         const query = {
-//             where: {
-//                 id: quoteId,
-//                 owner: ownerId,
-//             }
-//         };
-//         await Quote.destroy(query);
-//         res.status(200).json({
-//             message: `Quote ${quoteId} has been removed.`
-//         });
-//     } catch (err) {
-//         res.status(500).json({ error: err });
-//     }
-// });
+router.delete("/:id", validateJWT, async(req, res) => {
+    const ownerId = req.member.id;
+    const quoteId = req.params.id;
+    try {
+        const query = {
+            where: {
+                id: quoteId,
+                createdBy: ownerId,
+            }
+        };
+        await Quote.destroy(query);
+        res.status(200).json({
+            message: `Quote ${quoteId} has been removed.`
+        });
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
+});
 
 module.exports = router;
