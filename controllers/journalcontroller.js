@@ -67,10 +67,10 @@ router.put("/:id", validateJWT, async(req, res) => {
         journalName: journalName
     };
     try {
-        const update = await Journal.update(updatedJournal, query);
-        res.status(200).json({
-            message: `Journal ${journalId} has been updated.`
-        });
+            const update = await Journal.update(updatedJournal, query);
+            res.status(200).json({
+                message: `Journal ${journalId} has been updated.`
+            });
     } catch (err) {
         res.status(500).json({ error: err });
     }

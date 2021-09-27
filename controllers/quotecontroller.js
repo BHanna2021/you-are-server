@@ -5,11 +5,11 @@ const validateIsAdmin = require("../middleware/validate-is-admin");
 const validateJWT = require("../middleware/validate-member")
 
 router.post("/", validateJWT, async(req, res) => {
-        const { quoteBody } = req.body.Quote;
+        const { quoteBody, share } = req.body.Quote;
         const { id } = req.member;
         const quoteEntry = {
             quoteBody,
-            // share,
+            share,
             createdBy: id
         }
         try {
@@ -32,7 +32,7 @@ router.post("/add", [validateJWT, validateIsAdmin], async(req, res) => {
     }
     try {
         const newQuote = await Quote.create(quoteEntry);
-        res.status(200).json(newQuote);
+        res.status(201).json(newQuote);
     } catch (err) {
         res.status(500).json({ error: err })
     }
@@ -59,6 +59,22 @@ router.get("/", validateJWT, async(req, res) => {
         where: {
             share: true,
             approvedForAll: true,
+        }
+    }
+    try {
+        const quotes = await Quote.findAll(query);
+        res.status(200).json(quotes);
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
+});
+
+//search all quotes that are marked shareable but not approved
+router.get("/share", [validateJWT, validateIsAdmin], async(req, res) => {
+    const query = {
+        where: {
+            share: true,
+            approvedForAll: false,
         }
     }
     try {

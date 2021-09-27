@@ -1,5 +1,3 @@
-const db = require("../db");
-
 const DefineMember = (sequelize, DataTypes) => {
     const Member = sequelize.define("member", {
         email: {
@@ -27,7 +25,7 @@ const DefineMember = (sequelize, DataTypes) => {
         isAdmin: {
             type: DataTypes.BOOLEAN,
             defaultValue: false,
-        } 
+        }
     })
     return Member
 };
