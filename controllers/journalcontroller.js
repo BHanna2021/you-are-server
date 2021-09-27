@@ -36,6 +36,7 @@ router.get("/", validateJWT, async(req, res) => {
 
 //when attempting a user that is not associated to the journal, it hits 500
 //tried commenting the try/catch block, tried a few things but no go with try in place
+//if have time, Justin recommended a prequery to search for the journalId, then a second query to validate that the req.member.id === memberId
 router.get("/:id", validateJWT, async(req, res) => {
     const { id } = req.member;
     const journalId = req.params.id;
