@@ -16,7 +16,7 @@ router.post("/register", async(req, res) => {
             firstName,
             phoneNumber,
             isAdmin
-        }); console.log(newMember)
+        });
         let token = jwt.sign({
             id: newMember.id,
         }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 });
